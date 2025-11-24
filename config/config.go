@@ -9,8 +9,9 @@ import (
 )
 
 type Config struct {
-	DiscordBotToken string
-	DiscordGuildID  string
+	DiscordBotToken      string
+	DiscordApplicationID string
+	DiscordGuildID       string
 }
 
 func NewConfig() (*Config, error) {
@@ -18,8 +19,9 @@ func NewConfig() (*Config, error) {
 	log.Println("LOG: ENV variables loaded")
 
 	config := &Config{
-		DiscordBotToken: os.Getenv("DISCORD_BOT_TOKEN"),
-		DiscordGuildID:  os.Getenv("DISCORD_GUILD_ID"),
+		DiscordBotToken:      os.Getenv("DISCORD_BOT_TOKEN"),
+		DiscordApplicationID: os.Getenv("DISCORD_APPLICATION_ID"),
+		DiscordGuildID:       os.Getenv("DISCORD_GUILD_ID"),
 	}
 
 	if config.DiscordBotToken == "" {
