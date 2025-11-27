@@ -8,7 +8,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/yncy0/slasher/commands"
 	"github.com/yncy0/slasher/config"
-	"github.com/yncy0/slasher/handlers"
 )
 
 func main() {
@@ -24,20 +23,6 @@ func main() {
 		return
 	}
 
-	dg.AddHandler(func(s *discordgo.Session, i *discordgo.InteractionCreate) {
-		switch i.Type {
-		case discordgo.InteractionApplicationCommand:
-			data := i.ApplicationCommandData()
-
-			switch data.Name {
-			case "ping":
-				handlers.HandlePing(s, i)
-			case "channel":
-				handlers.HandleChannel(s, i)
-			}
-		}
-	})
-
 	comms, err := commands.Commands()
 	if err != nil {
 		log.Fatalf("ERROR: Cannot load commands - %v", err)
@@ -50,6 +35,10 @@ func main() {
 			log.Fatal(err)
 		}
 	}
+
+	dg.AddHandler(func(s *discordgo.Session, i *discordgo.InteractionCreate) {
+		commands.InitHandlers(s, i)
+	})
 
 	err = dg.Open()
 	if err != nil {
