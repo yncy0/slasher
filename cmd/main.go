@@ -12,16 +12,12 @@ import (
 )
 
 func main() {
-	log.Print("LOG: Starting Discord Bot...")
-
-	log.Print("LOG: Loading Config...")
 	cfg, err := config.NewConfig()
 	if err != nil {
 		log.Fatalf("ERROR: Cannot load Config - %v", err)
 		return
 	}
 
-	log.Print("LOG: Loading Discord Bot...")
 	dg, err := discordgo.New("Bot " + cfg.DiscordBotToken)
 	if err != nil {
 		log.Fatalf("ERROR: Cannot load Discord Bot - %v", err)
@@ -29,19 +25,30 @@ func main() {
 	}
 
 	dg.AddHandler(func(s *discordgo.Session, i *discordgo.InteractionCreate) {
-		handlers.HandlePing(s, i)
+		switch i.Type {
+		case discordgo.InteractionApplicationCommand:
+			data := i.ApplicationCommandData()
+
+			switch data.Name {
+			case "ping":
+				handlers.HandlePing(s, i)
+			case "channel":
+				handlers.HandleChannel(s, i)
+			}
+		}
 	})
 
-	log.Printf("LOG: Loading Commands...")
 	comms, err := commands.Commands()
 	if err != nil {
 		log.Fatalf("ERROR: Cannot load commands - %v", err)
 		return
 	}
 
-	_, err = dg.ApplicationCommandBulkOverwrite(cfg.DiscordApplicationID, cfg.DiscordGuildID, comms)
-	if err != nil {
-		log.Fatalf("ERROR: Cannot read commands - %v", err)
+	for _, cmd := range comms {
+		_, err := dg.ApplicationCommandCreate(cfg.DiscordApplicationID, cfg.DiscordGuildID, cmd)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	err = dg.Open()

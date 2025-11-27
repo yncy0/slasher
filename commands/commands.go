@@ -25,11 +25,12 @@ func Commands() ([]*discordgo.ApplicationCommand, error) {
 							Description: "Naming Channels",
 							Required:    true,
 						},
-						{
-							Type:        discordgo.ApplicationCommandOptionChannel,
-							Name:        "type",
-							Description: "Type of Discord Channel",
-						},
+						// {
+						// 	Type:        discordgo.ApplicationCommandOptionChannel,
+						// 	Name:        "type",
+						// 	Description: "Type of Discord Channel",
+						// 	Required:    true,
+						// },
 					},
 				},
 			},
