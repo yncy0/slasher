@@ -10,11 +10,31 @@ func Commands() ([]*discordgo.ApplicationCommand, error) {
 			Name:        "ping",
 			Description: "Checking the bot if online",
 		},
+		{
+			Name:        "channel",
+			Description: "Command for Interact with Discord Server Channles",
+			Options: []*discordgo.ApplicationCommandOption{
+				{
+					Type:        discordgo.ApplicationCommandOptionSubCommand,
+					Name:        "add",
+					Description: "Adding Channels",
+					Options: []*discordgo.ApplicationCommandOption{
+						{
+							Type:        discordgo.ApplicationCommandOptionString,
+							Name:        "name",
+							Description: "Naming Channels",
+							Required:    true,
+						},
+						{
+							Type:        discordgo.ApplicationCommandOptionChannel,
+							Name:        "type",
+							Description: "Type of Discord Channel",
+						},
+					},
+				},
+			},
+		},
 	}
 
 	return commands, nil
 }
-
-// var CommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
-// 	"ping": handlers.OnHandlePing,
-// }
