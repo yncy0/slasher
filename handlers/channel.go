@@ -20,7 +20,6 @@ func HandleChannel(s *discordgo.Session, i *discordgo.InteractionCreate) {
 }
 
 func addChannel(s *discordgo.Session, i *discordgo.InteractionCreate) {
-
 	options := i.ApplicationCommandData().Options[0].Options
 
 	var channelName string
@@ -44,7 +43,16 @@ func addChannel(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		discordChannelType = discordgo.ChannelTypeGuildVoice
 	}
 
-	s.GuildChannelCreate(i.GuildID, channelName, discordChannelType)
+	_, err := s.GuildChannelCreate(i.GuildID, channelName, discordChannelType)
+	if err != nil {
+		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: "ERROR: Channel cannot create!",
+				Flags:   discordgo.MessageFlagsEphemeral,
+			},
+		})
+	}
 
 	embed := &discordgo.MessageEmbed{
 		Title:       fmt.Sprintf("New Channel Added: %s", channelName),
@@ -75,7 +83,16 @@ func deleteChannel(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		}
 	}
 
-	s.ChannelDelete(channelID)
+	_, err := s.ChannelDelete(channelID)
+	if err != nil {
+		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: "Error: Cannot Delete Channel",
+				Flags:   discordgo.MessageFlagsEphemeral,
+			},
+		})
+	}
 
 	embed := &discordgo.MessageEmbed{
 		Title:       "Channel Deleted",
