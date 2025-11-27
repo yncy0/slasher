@@ -29,18 +29,15 @@ func main() {
 		return
 	}
 
+	dg.AddHandler(commands.InitHandlers)
+
+	err = dg.Open()
 	for _, cmd := range comms {
 		_, err := dg.ApplicationCommandCreate(cfg.DiscordApplicationID, cfg.DiscordGuildID, cmd)
 		if err != nil {
 			log.Fatal(err)
 		}
 	}
-
-	dg.AddHandler(func(s *discordgo.Session, i *discordgo.InteractionCreate) {
-		commands.InitHandlers(s, i)
-	})
-
-	err = dg.Open()
 	if err != nil {
 		log.Fatalf("ERROR: Cannot open Discord Bot - %v", err)
 		return

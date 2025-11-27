@@ -20,6 +20,7 @@ func HandleChannel(s *discordgo.Session, i *discordgo.InteractionCreate) {
 }
 
 func addChannel(s *discordgo.Session, i *discordgo.InteractionCreate) {
+
 	options := i.ApplicationCommandData().Options[0].Options
 
 	var channelName string
@@ -34,9 +35,20 @@ func addChannel(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		}
 	}
 
+	var discordChannelType discordgo.ChannelType
+
+	switch channelType {
+	case "text":
+		discordChannelType = discordgo.ChannelTypeGuildText
+	case "voice":
+		discordChannelType = discordgo.ChannelTypeGuildVoice
+	}
+
+	s.GuildChannelCreate(i.GuildID, channelName, discordChannelType)
+
 	embed := &discordgo.MessageEmbed{
 		Title:       fmt.Sprintf("New Channel Added: %s", channelName),
-		Description: fmt.Sprintf("The %s Channel %s has been created", channelType, channelName),
+		Description: fmt.Sprintf("A %s Channel %s has been created", channelType, channelName),
 	}
 
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
@@ -51,17 +63,23 @@ func addChannel(s *discordgo.Session, i *discordgo.InteractionCreate) {
 func deleteChannel(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	options := i.ApplicationCommandData().Options[0].Options
 
-	var channelName *discordgo.Channel
+	var channelID string
+	var channelName string
+
 	for _, opt := range options {
 		switch opt.Name {
 		case "channel":
-			channelName = opt.ChannelValue(s)
+			channel := opt.ChannelValue(s)
+			channelID = channel.ID
+			channelName = channel.Name
 		}
 	}
 
+	s.ChannelDelete(channelID)
+
 	embed := &discordgo.MessageEmbed{
 		Title:       "Channel Deleted",
-		Description: fmt.Sprintf("Channel %s has been deleted", channelName.Name),
+		Description: fmt.Sprintf("Channel %s has been deleted", channelName),
 	}
 
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
