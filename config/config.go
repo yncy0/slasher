@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -16,7 +15,6 @@ type Config struct {
 
 func NewConfig() (*Config, error) {
 	_ = godotenv.Load()
-	log.Println("LOG: ENV variables loaded")
 
 	config := &Config{
 		DiscordBotToken:      os.Getenv("DISCORD_BOT_TOKEN"),
